@@ -1,25 +1,36 @@
-# Итоговый проект
 
-### Описание
-Репозиторий предназначен для сдачи итогового проекта.
+## Data Loading Pipeline
+----
+This project provides a data loading pipeline that allows you to load data from a PostgreSQL database to a Vertica database. It includes classes for loading data into the staging layer and populating the common data marts layer. The pipeline utilizes SQL files for executing the necessary queries.
 
-### Как работать с репозиторием
-1. В вашем GitHub-аккаунте автоматически создастся репозиторий `de-project-final` после того, как вы привяжете свой GitHub-аккаунт на Платформе.
-2. Скопируйте репозиторий на свой компьютер. В качестве пароля укажите ваш `Access Token`, который нужно получить на странице [Personal Access Tokens](https://github.com/settings/tokens)):
-	* `git clone https://github.com/Yandex-Practicum/de-project-final`
-3. Перейдите в директорию с проектом: 
-	* `cd de-project-final`
-4. Выполните проект и сохраните получившийся код в локальном репозитории:
-	* `git add .`
-	* `git commit -m 'my best commit'`
-5. Обновите репозиторий в вашем GitHub-аккаунте:
-	* `git push origin main`
+## Archetecture
+---
+![archetecture.png](/src/img/archetecture.png)
 
-### Структура репозитория
-Файлы в репозитории будут использоваться для проверки и обратной связи по проекту. Поэтому постарайтесь публиковать ваше решение согласно установленной структуре: так будет проще соотнести задания с решениями.
+## Usage
+---
+1. Configure the database connections by updating the connection information in the `config.py` file.
 
-Внутри `src` расположены папки:
-- `/src/dags` - вложите в эту папку код DAG, который поставляет данные из источника в хранилище. Назовите DAG `1_data_import.py`. Также разместите здесь DAG, который обновляет витрины данных. Назовите DAG `2_datamart_update.py`.
-- `/src/sql` - сюда вложите SQL-запрос формирования таблиц в `STAGING`- и `DWH`-слоях, а также скрипт подготовки данных для итоговой витрины.
-- `/src/py` - если источником вы выберете Kafka, то в этой папке разместите код запуска генерации и чтения данных в топик.
-- `/src/img` - здесь разместите скриншот реализованного над витриной дашборда.
+2. Use the `LoadStaging` class to load data from the source PostgreSQL database to the Vertica staging layer. Provide the PostgreSQL and Vertica connection details when instantiating the class.
+
+```python
+from data_loading_pipeline import LoadStaging
+
+# Instantiate the LoadStaging class with the connection information
+load_staging = LoadStaging(postgres_conn_info, vertica_conn_info)
+load_staging.load_data()
+```
+3. Use the `LoadCDM` class to populate the common data marts layer from the staging layer. Provide the Vertica connection details when instantiating the class.
+
+
+```python
+from data_loading_pipeline import LoadCDM
+
+# Instantiate the LoadCDM class with the connection information
+load_cdm = LoadCDM(vertica_conn_info)
+load_cdm.load_data()
+```
+
+4. Customize the SQL queries by modifying the SQL files (`staging_query.sql` and `cdm_query.sql`) according to your specific requirements.
+
+5. Execute the DAG file (`data_loading_dag.py`) to schedule and run the data loading pipeline.
