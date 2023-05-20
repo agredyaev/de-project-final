@@ -1,14 +1,14 @@
 CREATE TABLE NEYBYANDEXRU__STAGING.transactions
 (
     operation_id uuid NOT NULL,
-    account_number_from int,
-    account_number_to int,
-    currency_code int,
-    country varchar(100),
-    status varchar(100),
-    transaction_type varchar(100),
-    amount int,
-    transaction_dt timestamp
+    account_number_from int NULL,
+    account_number_to int NULL,
+    currency_code int NULL,
+    country varchar(100) NULL,
+    status varchar(100) NULL,
+    transaction_type varchar(100) NULL,
+    amount int NULL,
+    transaction_dt timestamp NULL
 )
 PARTITION BY (hash(date_trunc('day', transactions.transaction_dt)));
 

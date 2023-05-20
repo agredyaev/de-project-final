@@ -1,4 +1,3 @@
-# Define the connection information for the databases
 from os import environ
 
 postgres_conn_info = {
@@ -8,14 +7,17 @@ postgres_conn_info = {
     'user': environ.get('POSTGRES_USER'),
     'password': environ.get('POSTGRES_PASS'),
     'sslmode': 'verify-ca',
-    'sslrootcert': '/path/to/certificate.crt'
+    'sslrootcert': '/data/CA.pem'
 }
 
 vertica_conn_info = {
     'host': 'vertica.tgcloudenv.ru',
+    'database': 'dwh',
     'port': 5433,
     'user': environ.get('VERTICA_USER'),
-    'password': environ.get('VERTICA_PASSWORD')
+    'password': environ.get('VERTICA_PASSWORD'),
+    'autocommit': True,
+    'use_prepared_statements': False
 }
 
-
+DIR = '/root/de-project-final/src'

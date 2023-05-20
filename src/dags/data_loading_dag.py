@@ -1,23 +1,44 @@
-from py.config import *
-from py.utils import *
+from py.config import postgres_conn_info, vertica_conn_info
+from py.utils import LoadStaging, LoadCDM
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.python import PythonOperator
 from datetime import datetime
 
-# Define the tasks
-def load_staging_task():
+
+def staging_load_currencies():
     """
-    Task to load data into the staging layer.
+    Task to load currency data into the staging layer.
 
     This task instantiates the LoadStaging class with the connection information
     for the PostgreSQL source database and Vertica target database, and then
-    calls the load_data method to perform the data loading process.
+    calls the load_data method to perform the data loading process for currencies.
     """
     load_staging = LoadStaging(postgres_conn_info, vertica_conn_info)
-    load_staging.load_data()
+    load_staging.load_data(
+        path_to_pg_file='./sql/etl_staging_currencies_extract.sql',
+        path_to_vertica_file='./sql/etl_staging_currencies_load.sql',
+        builder_method='build_currencies'
+    )
 
 
-def load_cdm_task():
+def staging_load_transactions():
+    """
+    Task to load transaction data into the staging layer.
+
+    This task instantiates the LoadStaging class with the connection information
+    for the PostgreSQL source database and Vertica target database, and then
+    calls the load_data method to perform the data loading process for transactions.
+    """
+    load_staging = LoadStaging(postgres_conn_info, vertica_conn_info)
+    load_staging.load_data(
+        path_to_pg_file='./sql/etl_staging_transactions_extract.sql',
+        path_to_vertica_file='./sql/etl_staging_transactions_load.sql',
+        builder_method='build_transactions'
+    )
+
+
+
+def cdm_load_global_metrics():
     """
     Task to load data into the common data marts layer.
 
@@ -29,7 +50,6 @@ def load_cdm_task():
     load_cdm.load_data()
 
 
-# Define the DAG
 dag = DAG(
     'data_loading_dag',
     description='DAG for data loading processes',
@@ -39,18 +59,23 @@ dag = DAG(
 )
 
 
-load_staging = PythonOperator(
-    task_id='load_staging',
-    python_callable=load_staging_task,
+stg_load_transactions = PythonOperator(
+    task_id='staging_load_transactions',
+    python_callable=staging_load_transactions,
+    dag=dag
+)
+
+stg_load_currencies = PythonOperator(
+    task_id='staging_load_currencies',
+    python_callable=staging_load_currencies,
     dag=dag
 )
 
 
-load_cdm = PythonOperator(
+cdm_load_glbl_metrics = PythonOperator(
     task_id='load_cdm',
-    python_callable=load_cdm_task,
+    python_callable=cdm_load_global_metrics,
     dag=dag
 )
 
-# Define the dependencies
-load_staging >> load_cdm
+stg_load_currencies >> stg_load_transactions, stg_load_currencies >> cdm_load_glbl_metrics

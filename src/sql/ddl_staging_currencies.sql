@@ -1,18 +1,18 @@
-CREATE TABLE NEYBYANDEXRU__STAGING.сurrencies
+CREATE TABLE NEYBYANDEXRU__STAGING.currencies
 (
-    date_update timestamp,
-    currency_code int,
-    currency_code_with int,
-    currency_code_div float
+    date_update timestamp null,
+    currency_code int null,
+    currency_code_with int null,
+    currency_code_div float null
 )
-PARTITION BY (hash(date_trunc('day', сurrencies.date_update)));
+PARTITION BY (hash(date_trunc('day', currencies.date_update)));
 
 COMMENT ON COLUMN NEYBYANDEXRU__STAGING.currencies.date_update IS 'Date of currency rate update';
 COMMENT ON COLUMN NEYBYANDEXRU__STAGING.currencies.currency_code IS 'Three-digit code of the transaction currency';
 COMMENT ON COLUMN NEYBYANDEXRU__STAGING.currencies.currency_code_with IS 'Ratio of another currency to the currency with a three-digit code';
 COMMENT ON COLUMN NEYBYANDEXRU__STAGING.currencies.currency_code_div IS 'Value of the ratio of one unit of another currency to one unit of the transaction currency';
 
-CREATE PROJECTION NEYBYANDEXRU__STAGING.сurrencies /*+createtype(P)*/ 
+CREATE PROJECTION NEYBYANDEXRU__STAGING.currencies /*+createtype(P)*/ 
 (
  date_update,
  currency_code,
@@ -20,10 +20,10 @@ CREATE PROJECTION NEYBYANDEXRU__STAGING.сurrencies /*+createtype(P)*/
  currency_code_div
 )
 AS
- SELECT сurrencies.date_update,
-        сurrencies.currency_code,
-        сurrencies.currency_code_with,
-        сurrencies.currency_code_div
- FROM NEYBYANDEXRU__STAGING.сurrencies
- ORDER BY сurrencies.date_update
-SEGMENTED BY hash(сurrencies.date_update, сurrencies.currency_code, сurrencies.currency_code_with) ALL NODES KSAFE 1;
+ SELECT currencies.date_update,
+        currencies.currency_code,
+        currencies.currency_code_with,
+        currencies.currency_code_div
+ FROM NEYBYANDEXRU__STAGING.currencies
+ ORDER BY currencies.date_update
+SEGMENTED BY hash(currencies.date_update, currencies.currency_code, currencies.currency_code_with) ALL NODES KSAFE 1;
