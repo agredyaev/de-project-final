@@ -3,34 +3,37 @@
 ----
 This project provides a data loading pipeline that allows you to load data from a PostgreSQL database to a Vertica database. It includes classes for loading data into the staging layer and populating the common data marts layer. The pipeline utilizes SQL files for executing the necessary queries.
 
+## Project Overview
+----
+The data engineering project consists of the following components:
+
+1. Staging Layer: The staging layer is responsible for extracting data from the source systems and performing initial transformations. It includes tasks for loading transaction data and currency data from the source PostgreSQL database into the staging layer.
+
+2. Common Data Mart (CDM): The common data mart is a centralized repository for storing pre-aggregated and transformed data. It includes tasks for loading global metrics data into the CDM layer.
+
+3. Data Pipeline: The data pipeline is implemented using Apache Airflow, an open-source platform for orchestrating workflows. The DAGs (Directed Acyclic Graphs) in Airflow define the sequence of tasks and dependencies for data extraction, transformation, and loading.
+
+4. SQL Templates: SQL templates are used for generating dynamic SQL queries. These templates can be customized to include specific date ranges, filters, and transformations as per the project requirements.
+
+5. Data Storage: The data is stored in the Vertica database, which provides a scalable and high-performance analytics platform for data analysis and reporting.
+
+## Project Structure
+
+The project structure is organized as follows:
+
+- `src/`: Contains the source code and modules for the project.
+- `src/sql/`: Includes the SQL templates for data extraction and transformation.
+- `src/py/`: Contains utility functions and common modules used in the project.
+- `dags/`: Includes the DAG (Directed Acyclic Graph) files that define the data pipelines.
+
 ## Archetecture
 ---
 ![archetecture.png](/src/img/archetecture.png)
 
-## Usage
----
-1. Configure the database connections by updating the connection information in the `config.py` file.
+## Output mart
+---- 
+NEYBYANDEXRU__DWH.global_metrics
 
-2. Use the `LoadStaging` class to load data from the source PostgreSQL database to the Vertica staging layer. Provide the PostgreSQL and Vertica connection details when instantiating the class.
-
-```python
-from data_loading_pipeline import LoadStaging
-
-# Instantiate the LoadStaging class with the connection information
-load_staging = LoadStaging(postgres_conn_info, vertica_conn_info)
-load_staging.load_data()
-```
-3. Use the `LoadCDM` class to populate the common data marts layer from the staging layer. Provide the Vertica connection details when instantiating the class.
-
-
-```python
-from data_loading_pipeline import LoadCDM
-
-# Instantiate the LoadCDM class with the connection information
-load_cdm = LoadCDM(vertica_conn_info)
-load_cdm.load_data()
-```
-
-4. Customize the SQL queries by modifying the SQL files (`staging_query.sql` and `cdm_query.sql`) according to your specific requirements.
-
-5. Execute the DAG file (`data_loading_dag.py`) to schedule and run the data loading pipeline.
+## Dashboard
+-----
+![dasboard.png](/src/img/dashboard.png)

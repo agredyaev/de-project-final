@@ -33,11 +33,11 @@ _transactions_per_account as (
 )
 select 
 	date_update,
-	currency_code,
+	currency_code currency_from,
 	sum(amount_total) amount_total,
 	sum(transactions_per_account) cnt_transactions,
-	avg(transactions_per_account) avg_transactions_per_account,
+	avg(amount_total) avg_transactions_per_account,
 	count(distinct account_number_from) cnt_accounts_make_transactions
 from _transactions_per_account
-group by date_update, currency_code
-where extract(day from (date_update - interval '1 DAY')-'{{ variable }}')=0;
+where extract(day from (date_update - interval '1 DAY')-'{{ variable }}')=0
+group by date_update, currency_code;

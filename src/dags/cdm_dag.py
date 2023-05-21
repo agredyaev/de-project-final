@@ -34,7 +34,6 @@ def cdm_load_dag():
     @task
     def cdm_load_global_metrics(variable):
 
-        pg_hook = PostgresHook('postgres_connection')
         vertica_hook = VerticaHook('vertica_connection')
 
         table_name = f'{CDM_SCHEMA}.global_metrics'
@@ -45,8 +44,8 @@ def cdm_load_dag():
             template_name=template_name,
             variable=variable
         )
-
-        dataframe = pg_hook.get_pandas_df(sql=rendered_query)
+        
+        dataframe = vertica_hook.get_pandas_df(sql=rendered_query)
         insert_dataframe_to_vertica(
             vertica_hook=vertica_hook,
             dataframe=dataframe,
