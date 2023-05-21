@@ -26,7 +26,7 @@ from pendulum import datetime
 
 
 @dag(
-    dag_id='test12',
+    dag_id='staging_load_data',
     description=__doc__,
     schedule="@daily",
     start_date=datetime(2022, 10, 1),
