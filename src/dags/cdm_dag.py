@@ -28,6 +28,7 @@ from pendulum import datetime
     description=__doc__,
     schedule="@daily",
     start_date=datetime(2022, 10, 2),
+    end_date=datetime(2022, 11, 2),
     catchup=True
 )
 def cdm_load_dag():
