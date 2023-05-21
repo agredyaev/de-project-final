@@ -9,4 +9,5 @@ SELECT
     amount,
     transaction_dt
 FROM
-    public.transactions;
+    public.transactions
+where extract(day from transaction_dt-'{{ variable }}')=0;
