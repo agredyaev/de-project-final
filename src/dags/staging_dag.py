@@ -10,8 +10,6 @@ Each task retrieves the respective SQL template, renders it with the provided va
 The target Vertica tables and the corresponding SQL templates are defined in the common module, and the PostgresHook and VerticaHook objects are used to establish connections to the source and target databases, respectively.
 
 Make sure to configure the appropriate connection details and file paths in the common module before running this DAG.
-
-Note: The tasks are executed in parallel by enclosing them in a list. Adjust the parallelism and task dependencies according to your requirements.
 """
 
 import sys
