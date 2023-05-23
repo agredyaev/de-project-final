@@ -15,12 +15,12 @@ Make sure to configure the appropriate connection details and file paths in the 
 import sys
 sys.path.append('/root/de-project-final/src')
 
-from py.common import TAMPLATES_PATH, STG_TEMPLATE, STG_SCHEMA
-from py.utils import get_rendered_sql_template, insert_dataframe_to_vertica
-from airflow.decorators import dag, task
-from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.providers.vertica.hooks.vertica import VerticaHook
 from pendulum import datetime
+from py.utils import DataProcessor
+from airflow.decorators import dag, task
+from py.common import TAMPLATES_PATH, STG_TEMPLATE, STG_SCHEMA
+from airflow.providers.vertica.hooks.vertica import VerticaHook
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 
 @dag(
@@ -33,52 +33,49 @@ from pendulum import datetime
 )
 def staging_load_dag():
     @task
-    def staging_load_currencies(variable):
+    def staging_load_currencies(variable: str):
 
-        pg_hook = PostgresHook('postgres_connection')
-        vertica_hook = VerticaHook('vertica_connection')
-
+        template_path = TAMPLATES_PATH
         table_name = f'{STG_SCHEMA}.currencies'
         template_name = f'{STG_TEMPLATE}_currencies.sql'
-        
-        rendered_query = get_rendered_sql_template(
-            path_to_templates_dir=TAMPLATES_PATH,
-            template_name=template_name,
-            variable=variable
-        )
-
-        dataframe = pg_hook.get_pandas_df(sql=rendered_query)
-        insert_dataframe_to_vertica(
-            vertica_hook=vertica_hook,
-            dataframe=dataframe,
-            table_name=table_name
-        )
-
-    @task
-    def staging_load_transactions(variable):
 
         pg_hook = PostgresHook('postgres_connection')
         vertica_hook = VerticaHook('vertica_connection')
 
+        processor = DataProcessor(
+            variable=variable,
+            template_path=template_path,
+            table_name=table_name,
+            template_name=template_name,
+            ingest_hook=pg_hook,
+            egest_hook=vertica_hook
+        )
+
+        processor.run()
+
+    @task
+    def staging_load_transactions(variable: str):
+
+        template_path = TAMPLATES_PATH
         table_name = f'{STG_SCHEMA}.transactions'
         template_name = f'{STG_TEMPLATE}_transactions.sql'
-        
-        rendered_query = get_rendered_sql_template(
-            path_to_templates_dir=TAMPLATES_PATH,
+
+        pg_hook = PostgresHook('postgres_connection')
+        vertica_hook = VerticaHook('vertica_connection')
+
+        processor = DataProcessor(
+            variable=variable,
+            template_path=template_path,
+            table_name=table_name,
             template_name=template_name,
-            variable=variable
+            ingest_hook=pg_hook,
+            egest_hook=vertica_hook
         )
 
-        dataframe = pg_hook.get_pandas_df(sql=rendered_query)
-        insert_dataframe_to_vertica(
-            vertica_hook=vertica_hook,
-            dataframe=dataframe,
-            table_name=table_name
-        )
+        processor.run()
 
-    [staging_load_currencies('{{ ds }}'), staging_load_transactions('{{ ds }}')]
-
+    [staging_load_currencies('{{ ds }}'),
+     staging_load_transactions('{{ ds }}')]
 
 
 staging_load_dag()
-
