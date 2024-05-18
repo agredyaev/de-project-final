@@ -11,7 +11,7 @@ The project is designed to run in the cloud, where the entire environment is set
 ![Vertica](https://img.shields.io/badge/Vertica-10.0.1-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13-blue)
 ![Metabase](https://img.shields.io/badge/Metabase-0.39.4-blue)
-![MIT License](https://img.shields.io/badge/License-MIT-green)(https://opensource.org/licenses/MIT)
+![[MIT License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
 
 ## Project Overview
 ----
