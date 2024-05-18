@@ -7,15 +7,18 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 
 class DataProcessor:
-    def __init__(self, variable: str,
-                 template_path: str,
-                 template_name: str,
-                 table_name: str,
-                 ingest_hook: Union[PostgresHook, VerticaHook],
-                 egest_hook: VerticaHook):
+    def __init__(
+        self,
+        variable: str,
+        template_path: str,
+        template_name: str,
+        table_name: str,
+        ingest_hook: Union[PostgresHook, VerticaHook],
+        egest_hook: VerticaHook,
+    ):
         """
         DataProcessor class for processing SQL templates and loading data into a target Vertica table.
-        
+
         Args:
             variable (str): The variable to be rendered in the SQL template.
             template_path (str): The file path to the directory containing the SQL template file.
@@ -30,9 +33,9 @@ class DataProcessor:
 
             _insert_dataframe_to_vertica(self, dataframe: DataFrame) -> None:
                 Inserts a Pandas DataFrame into a Vertica table using the COPY command.
-                Establishes a connection to the Vertica database using the VerticaHook object. 
-                It efficiently inserts the DataFrame into the specified table using the COPY command. 
-                The DataFrame is converted to a CSV string with index and header set to False using the to_csv method. 
+                Establishes a connection to the Vertica database using the VerticaHook object.
+                It efficiently inserts the DataFrame into the specified table using the COPY command.
+                The DataFrame is converted to a CSV string with index and header set to False using the to_csv method.
                 The COPY command is executed on the Vertica connection's cursor, and the changes are committed to the database.
 
             run(self):
@@ -57,7 +60,7 @@ class DataProcessor:
         """
         full_template_path = os.path.join(self.template_path, self.template_name)
 
-        with open(full_template_path, 'r') as file:
+        with open(full_template_path, "r") as file:
             sql_template_content = file.read()
             template = Template(sql_template_content)
             return template.render(variable=self.variable)
@@ -73,7 +76,8 @@ class DataProcessor:
             cur = conn.cursor()
             cur.copy(
                 "COPY {} FROM STDIN DELIMITER ',' ENFORCELENGTH DIRECT".format(
-                    self.table_name),
+                    self.table_name
+                ),
                 dataframe.to_csv(index=False, header=False),
             )
             conn.commit()
