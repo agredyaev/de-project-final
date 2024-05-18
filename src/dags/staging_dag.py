@@ -13,34 +13,34 @@ Make sure to configure the appropriate connection details and file paths in the 
 """
 
 import sys
-sys.path.append('/root/de-project-final/src')
+
+sys.path.append("/root/de-project-final/src")
 
 from pendulum import datetime
-from py.utils import DataProcessor
+from utils.utils import DataProcessor
 from airflow.decorators import dag, task
-from py.common import TAMPLATES_PATH, STG_TEMPLATE, STG_SCHEMA
+from utils.common import TAMPLATES_PATH, STG_TEMPLATE, STG_SCHEMA
 from airflow.providers.vertica.hooks.vertica import VerticaHook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 
 @dag(
-    dag_id='staging_load_data',
+    dag_id="staging_load_data",
     description=__doc__,
     schedule="@daily",
     start_date=datetime(2022, 10, 1),
     end_date=datetime(2022, 11, 2),
-    catchup=True
+    catchup=True,
 )
 def staging_load_dag():
     @task
     def staging_load_currencies(variable: str):
-
         template_path = TAMPLATES_PATH
-        table_name = f'{STG_SCHEMA}.currencies'
-        template_name = f'{STG_TEMPLATE}_currencies.sql'
+        table_name = f"{STG_SCHEMA}.currencies"
+        template_name = f"{STG_TEMPLATE}_currencies.sql"
 
-        pg_hook = PostgresHook('postgres_connection')
-        vertica_hook = VerticaHook('vertica_connection')
+        pg_hook = PostgresHook("postgres_connection")
+        vertica_hook = VerticaHook("vertica_connection")
 
         processor = DataProcessor(
             variable=variable,
@@ -48,20 +48,19 @@ def staging_load_dag():
             table_name=table_name,
             template_name=template_name,
             ingest_hook=pg_hook,
-            egest_hook=vertica_hook
+            egest_hook=vertica_hook,
         )
 
         processor.run()
 
     @task
     def staging_load_transactions(variable: str):
-
         template_path = TAMPLATES_PATH
-        table_name = f'{STG_SCHEMA}.transactions'
-        template_name = f'{STG_TEMPLATE}_transactions.sql'
+        table_name = f"{STG_SCHEMA}.transactions"
+        template_name = f"{STG_TEMPLATE}_transactions.sql"
 
-        pg_hook = PostgresHook('postgres_connection')
-        vertica_hook = VerticaHook('vertica_connection')
+        pg_hook = PostgresHook("postgres_connection")
+        vertica_hook = VerticaHook("vertica_connection")
 
         processor = DataProcessor(
             variable=variable,
@@ -69,13 +68,12 @@ def staging_load_dag():
             table_name=table_name,
             template_name=template_name,
             ingest_hook=pg_hook,
-            egest_hook=vertica_hook
+            egest_hook=vertica_hook,
         )
 
         processor.run()
 
-    [staging_load_currencies('{{ ds }}'),
-     staging_load_transactions('{{ ds }}')]
+    [staging_load_currencies("{{ ds }}"), staging_load_transactions("{{ ds }}")]
 
 
 staging_load_dag()

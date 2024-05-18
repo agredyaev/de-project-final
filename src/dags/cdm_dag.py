@@ -12,33 +12,32 @@ Make sure to configure the appropriate connection details and file paths in the 
 """
 
 import sys
-sys.path.append('/root/de-project-final/src')
+
+sys.path.append("/root/de-project-final/src")
 
 from pendulum import datetime
-from py.utils import DataProcessor
+from utils.utils import DataProcessor
 from airflow.decorators import dag, task
-from py.common import TAMPLATES_PATH, CDM_TEMPLATE, CDM_SCHEMA
+from utils.common import TAMPLATES_PATH, CDM_TEMPLATE, CDM_SCHEMA
 from airflow.providers.vertica.hooks.vertica import VerticaHook
-from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 
 @dag(
-    dag_id='cdm_load_data',
+    dag_id="cdm_load_data",
     description=__doc__,
     schedule="@daily",
     start_date=datetime(2022, 10, 2),
     end_date=datetime(2022, 11, 2),
-    catchup=True
+    catchup=True,
 )
 def cdm_load_dag():
     @task
     def cdm_load_global_metrics(variable: str):
-
         template_path = TAMPLATES_PATH
-        table_name = f'{CDM_SCHEMA}.global_metrics'
-        template_name = f'{CDM_TEMPLATE}_global_metrics.sql'
+        table_name = f"{CDM_SCHEMA}.global_metrics"
+        template_name = f"{CDM_TEMPLATE}_global_metrics.sql"
 
-        vertica_hook = VerticaHook('vertica_connection')
+        vertica_hook = VerticaHook("vertica_connection")
 
         processor = DataProcessor(
             variable=variable,
@@ -46,13 +45,12 @@ def cdm_load_dag():
             table_name=table_name,
             template_name=template_name,
             ingest_hook=vertica_hook,
-            egest_hook=vertica_hook
+            egest_hook=vertica_hook,
         )
 
         processor.run()
-        
-    cdm_load_global_metrics('{{ ds }}')
+
+    cdm_load_global_metrics("{{ ds }}")
 
 
 cdm_load_dag()
-
