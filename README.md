@@ -1,7 +1,17 @@
-
 ## Data Loading Pipeline
 ----
 This project provides a data loading pipeline that allows you to load data from a PostgreSQL database to a Vertica database. It includes classes for loading data into the staging layer and populating the common data marts layer. The pipeline utilizes SQL files for executing the necessary queries.
+
+The project is designed to run in the cloud, where the entire environment is set up and configured.
+
+## Technologies
+
+![Python](https://img.shields.io/badge/Python-3.9-blue)
+![Airflow](https://img.shields.io/badge/Airflow-2.0.2-blue)
+![Vertica](https://img.shields.io/badge/Vertica-10.0.1-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13-blue)
+![Metabase](https://img.shields.io/badge/Metabase-0.39.4-blue)
+![MIT License](https://img.shields.io/badge/License-MIT-green)(https://opensource.org/licenses/MIT)
 
 ## Project Overview
 ----
@@ -21,14 +31,16 @@ The data engineering project consists of the following components:
 
 The project structure is organized as follows:
 
+- `img/`: Images for documentation and architecture.
 - `src/`: Contains the source code and modules for the project.
-- `src/sql/`: Includes the SQL templates for data extraction and transformation.
-- `src/py/`: Contains utility functions and common modules used in the project.
-- `dags/`: Includes the DAG (Directed Acyclic Graph) files that define the data pipelines.
+  - `src/sql/`: Includes the SQL templates for data extraction and transformation.
+  - `src/utils/`: Contains utility functions and common modules used in the project.
+  - `src/dags/`: Includes the DAG (Directed Acyclic Graph) files that define the data pipelines.
+
 
 ## Archetecture
 ---
-![archetecture.png](/src/img/archetecture.png)
+![archetecture.png](/img/archetecture.png)
 
 ## Output mart
 ---- 
@@ -36,4 +48,4 @@ NEYBYANDEXRU__DWH.global_metrics
 
 ## Dashboard
 -----
-![dasboard.png](/src/img/dashboard.png)
+![dasboard.png](/img/dashboard.png)
